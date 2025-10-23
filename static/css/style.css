@@ -1,0 +1,40 @@
+body { background: #f8f9fb; color: #222; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial; }
+.table td, .table th { vertical-align: middle; }
+.list-group-item.low { background-color: #fff3cd; }
+
+/* Header y footer con degradado azul -> verde */
+.navbar.bg-gradient, header.bg-gradient {
+	background: linear-gradient(90deg, #0d6efd 0%, #20c997 100%) !important; /* azul a verde */
+	background-color: transparent !important;
+	color: #fff !important;
+}
+
+.navbar .navbar-brand {
+	font-weight: 600;
+	letter-spacing: 0.3px;
+}
+
+/* Centrar y agrandar el título principal */
+.navbar .navbar-brand {
+	display: block;
+	text-align: center;
+	width: 100%;
+	font-size: 1.4rem; /* un poco más grande */
+	color: #fff !important;
+}
+
+footer.bg-dark.bg-gradient {
+	background: linear-gradient(90deg, #0d6efd 0%, #20c997 100%) !important;
+	background-color: transparent !important;
+	color: rgba(255,255,255,0.95) !important;
+}
+
+footer h5 { color: #fff; font-weight:600; }
+footer p, footer a { color: rgba(255,255,255,0.9); }
+footer a:hover { color: #fff; text-decoration: none; }
+
+/* Ajustes para móviles: compactar espacio en header/footer */
+@media (max-width: 576px) {
+	.navbar .navbar-brand { font-size: 1.1rem; }
+	footer .container { padding-left: 0.75rem; padding-right: 0.75rem; }
+}

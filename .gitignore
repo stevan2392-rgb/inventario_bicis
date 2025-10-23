@@ -1,0 +1,10 @@
+.venv/
+env/
+__pycache__/
+*.py[cod]
+*.log
+inventario.db
+*.sqlite*
+.DS_Store
+.env
+TEMP_count_lines.txt

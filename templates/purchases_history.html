@@ -1,0 +1,201 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+  <h4><i class="fas fa-shopping-cart me-2"></i>Historial de Compras</h4>
+  <a href="/" class="btn btn-outline-primary">
+    <i class="fas fa-arrow-left me-1"></i>Volver al Inicio
+  </a>
+</div>
+
+<div class="card">
+  <div class="card-body">
+    <div class="table-responsive">
+      <table class="table table-hover" id="purchasesTable">
+        <thead class="table-dark">
+          <tr>
+            <th>Código</th>
+            <th>Fecha</th>
+            <th>Proveedor</th>
+            <th>Subtotal</th>
+            <th>IVA</th>
+            <th>Total</th>
+            <th>Notas</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td colspan="8" class="text-center">
+              <div class="spinner-border text-primary" role="status">
+                <span class="visually-hidden">Cargando...</span>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<script>
+async function loadPurchasesHistory() {
+  try {
+    const response = await fetch('/api/purchases/history');
+    const purchases = await response.json();
+    
+    const tbody = document.querySelector('#purchasesTable tbody');
+    tbody.innerHTML = '';
+    
+    if (purchases.length === 0) {
+      tbody.innerHTML = `
+        <tr>
+          <td colspan="8" class="text-center text-muted">
+            <i class="fas fa-inbox me-2"></i>No hay compras registradas
+          </td>
+        </tr>
+      `;
+      return;
+    }
+    
+    purchases.forEach(purchase => {
+      const row = document.createElement('tr');
+      const date = new Date(purchase.date);
+      row.innerHTML = `
+        <td><strong>${purchase.code}</strong></td>
+        <td>${date.toLocaleDateString('es-CO')}</td>
+        <td>${purchase.supplier.name}</td>
+        <td>${money(purchase.subtotal_excl_vat)}</td>
+        <td>${money(purchase.vat_total)}</td>
+        <td><strong>${money(purchase.total)}</strong></td>
+        <td>${purchase.notes || '-'}</td>
+        <td>
+          <button class="btn btn-sm btn-outline-info" onclick="viewPurchaseDetails(${purchase.id})">
+            <i class="fas fa-eye me-1"></i>Ver
+          </button>
+        </td>
+      `;
+      tbody.appendChild(row);
+    });
+  } catch (error) {
+    console.error('Error cargando historial de compras:', error);
+    const tbody = document.querySelector('#purchasesTable tbody');
+    tbody.innerHTML = `
+      <tr>
+        <td colspan="8" class="text-center text-danger">
+          <i class="fas fa-exclamation-triangle me-2"></i>Error cargando datos
+        </td>
+      </tr>
+    `;
+  }
+}
+
+function viewPurchaseDetails(purchaseId) {
+  // Crear modal para mostrar detalles de la compra
+  const modal = document.createElement('div');
+  modal.className = 'modal fade';
+  modal.id = 'purchaseModal';
+  modal.innerHTML = `
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Detalles de la Compra</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body">
+          <div id="purchaseDetails">
+            <div class="text-center">
+              <div class="spinner-border" role="status">
+                <span class="visually-hidden">Cargando...</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+        </div>
+      </div>
+    </div>
+  `;
+  
+  document.body.appendChild(modal);
+  const bsModal = new bootstrap.Modal(modal);
+  bsModal.show();
+  
+  // Cargar detalles de la compra
+  loadPurchaseDetails(purchaseId);
+  
+  // Limpiar modal cuando se cierre
+  modal.addEventListener('hidden.bs.modal', () => {
+    document.body.removeChild(modal);
+  });
+}
+
+async function loadPurchaseDetails(purchaseId) {
+  try {
+    const response = await fetch(`/api/purchases/${purchaseId}`);
+    const purchase = await response.json();
+    
+    const detailsDiv = document.getElementById('purchaseDetails');
+    detailsDiv.innerHTML = `
+      <div class="row mb-3">
+        <div class="col-md-6">
+          <strong>Código:</strong> ${purchase.code}
+        </div>
+        <div class="col-md-6">
+          <strong>Fecha:</strong> ${new Date(purchase.date).toLocaleDateString('es-CO')}
+        </div>
+      </div>
+      <div class="row mb-3">
+        <div class="col-12">
+          <strong>Proveedor:</strong> ${purchase.supplier.name}
+        </div>
+      </div>
+      <div class="table-responsive">
+        <table class="table table-sm">
+          <thead>
+            <tr>
+              <th>Producto</th>
+              <th>Cantidad</th>
+              <th>Costo Unit.</th>
+              <th>IVA</th>
+              <th>Total</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${purchase.items.map(item => `
+              <tr>
+                <td>${item.product.sku} - ${item.product.name}</td>
+                <td>${item.quantity}</td>
+                <td>${money(item.unit_cost)}</td>
+                <td>${money(item.vat_amount)}</td>
+                <td>${money(item.total_incl_vat)}</td>
+              </tr>
+            `).join('')}
+          </tbody>
+        </table>
+      </div>
+      <div class="row mt-3">
+        <div class="col-md-8">
+          <strong>Notas:</strong> ${purchase.notes || 'Sin notas'}
+        </div>
+        <div class="col-md-4 text-end">
+          <div><strong>Subtotal:</strong> ${money(purchase.subtotal_excl_vat)}</div>
+          <div><strong>IVA:</strong> ${money(purchase.vat_total)}</div>
+          <div><strong>Total:</strong> ${money(purchase.total)}</div>
+        </div>
+      </div>
+    `;
+  } catch (error) {
+    console.error('Error cargando detalles de compra:', error);
+    document.getElementById('purchaseDetails').innerHTML = `
+      <div class="alert alert-danger">
+        <i class="fas fa-exclamation-triangle me-2"></i>Error cargando detalles de la compra
+      </div>
+    `;
+  }
+}
+
+// Cargar datos al cargar la página
+document.addEventListener('DOMContentLoaded', loadPurchasesHistory);
+</script>
+{% endblock %}

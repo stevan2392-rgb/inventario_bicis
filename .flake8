@@ -1,0 +1,11 @@
+[flake8]
+# Configuración para suprimir errores de importación de reportlab
+ignore = F401
+exclude = 
+    .git,
+    __pycache__,
+    .venv,
+    venv,
+    .env
+per-file-ignores =
+    app.py:F401

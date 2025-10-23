@@ -1,0 +1,20 @@
+{
+  "configurations": [
+    {
+      "name": "Win32",
+      "includePath": [
+        "${workspaceFolder}/**",
+        "C:/Python313/Include",
+        "C:/Python313/Lib/site-packages/**",
+        "C:/Desarrollo/inventario_bicis/inventario_bicis/.venv/Include",
+        "C:/Desarrollo/inventario_bicis/inventario_bicis/.venv/Lib/site-packages/**"
+      ],
+      "defines": [],
+      "compilerPath": "C:/Program Files/Microsoft Visual Studio/2022/Community/VC/Tools/MSVC/14.40.0000/bin/Hostx64/x64/cl.exe",
+      "cStandard": "c17",
+      "cppStandard": "c++17",
+      "intelliSenseMode": "windows-msvc-x64"
+    }
+  ],
+  "version": 4
+}

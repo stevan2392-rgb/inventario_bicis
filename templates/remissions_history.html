@@ -1,0 +1,93 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+  <h4><i class="fas fa-truck me-2"></i>Historial de Remisiones</h4>
+  <a href="/" class="btn btn-outline-primary">
+    <i class="fas fa-arrow-left me-1"></i>Volver al Inicio
+  </a>
+</div>
+
+<div class="card">
+  <div class="card-body">
+    <div class="table-responsive">
+      <table class="table table-hover" id="remissionsTable">
+        <thead class="table-dark">
+          <tr>
+            <th>Número</th>
+            <th>Fecha</th>
+            <th>Cliente</th>
+            <th>Subtotal</th>
+            <th>IVA</th>
+            <th>Total</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td colspan="7" class="text-center">
+              <div class="spinner-border text-primary" role="status">
+                <span class="visually-hidden">Cargando...</span>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<script>
+async function loadRemissionsHistory() {
+  try {
+    const response = await fetch('/api/remissions/history');
+    const remissions = await response.json();
+    
+    const tbody = document.querySelector('#remissionsTable tbody');
+    tbody.innerHTML = '';
+    
+    if (remissions.length === 0) {
+      tbody.innerHTML = `
+        <tr>
+          <td colspan="7" class="text-center text-muted">
+            <i class="fas fa-inbox me-2"></i>No hay remisiones registradas
+          </td>
+        </tr>
+      `;
+      return;
+    }
+    
+    remissions.forEach(remission => {
+      const row = document.createElement('tr');
+      const date = new Date(remission.date);
+      row.innerHTML = `
+        <td><strong>${remission.number}</strong></td>
+        <td>${date.toLocaleDateString('es-CO')}</td>
+        <td>${remission.customer.name}</td>
+        <td>${money(remission.subtotal_excl_vat)}</td>
+        <td>${money(remission.vat_total)}</td>
+        <td><strong>${money(remission.total)}</strong></td>
+        <td>
+          <a href="/remission/${remission.id}" target="_blank" class="btn btn-sm btn-outline-primary">
+            <i class="fas fa-eye me-1"></i>Ver
+          </a>
+        </td>
+      `;
+      tbody.appendChild(row);
+    });
+  } catch (error) {
+    console.error('Error cargando historial de remisiones:', error);
+    const tbody = document.querySelector('#remissionsTable tbody');
+    tbody.innerHTML = `
+      <tr>
+        <td colspan="7" class="text-center text-danger">
+          <i class="fas fa-exclamation-triangle me-2"></i>Error cargando datos
+        </td>
+      </tr>
+    `;
+  }
+}
+
+// Cargar datos al cargar la página
+document.addEventListener('DOMContentLoaded', loadRemissionsHistory);
+</script>
+{% endblock %}

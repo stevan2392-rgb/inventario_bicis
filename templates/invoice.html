@@ -1,0 +1,394 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Factura {{ invoice.number }} – Ciclo Variedades SISI</title>
+<style>
+:root{
+  --line:#1d1d1d;
+  --thin:#cfcfcf;
+  --header:#e9f0ff;
+  --stamp:#d61b2b;
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{
+  font-family: Arial, Helvetica, sans-serif;
+  background:#f6f7fb;
+  color:#111;
+}
+
+/* ======== Página de factura ======== */
+.page{
+  width:210mm; min-height:297mm; margin:16px auto; background:#fff;
+  box-shadow:0 6px 24px rgba(14,23,53,.06);
+  padding:12mm; position:relative;
+}
+
+/* Sello CANCELADO */
+.stamp{
+  position:absolute; left:50%; top:58%;
+  transform:translate(-50%,-50%) rotate(-18deg);
+  font-weight:800; letter-spacing:2px; text-transform:uppercase;
+  font-size:42px; padding:12px 22px; border:6px solid var(--stamp); color:var(--stamp);
+  mix-blend-mode:multiply; opacity:.86; display:none; user-select:none;
+}
+.stamp.show{display:block}
+
+/* Cabecera */
+.header{
+  display:grid; grid-template-columns: 92px 1fr 240px; gap:12px; align-items:center;
+  border-bottom:2px solid var(--line); padding-bottom:8px;
+}
+.logo img{display:block;width:92px;height:auto}
+.company{ text-align:center; line-height:1.25 }
+.company .name{ font-weight:800; font-size:15px; letter-spacing:.3px }
+.company .line{ font-size:12px; text-transform:uppercase }
+.company .small{font-size:11px}
+
+.right{display:grid; gap:8px}
+.social{ font-size:11px; line-height:1.25; border:1px solid #e0e0e0; padding:6px 8px; border-radius:6px }
+.bill-meta{ border:1px solid var(--line); padding:8px; border-radius:6px; font-size:12px; text-transform:uppercase }
+.bill-meta .row{ display:flex; justify-content:space-between; padding:2px 0 }
+.bill-meta .no{ font-weight:800; font-size:14px }
+
+/* Sección de datos de cliente */
+.info{
+  display:grid; grid-template-columns: 1fr 1fr; gap:12px; margin-top:8px;
+  border-top:1px solid var(--line); border-bottom:1px solid var(--line);
+  padding:6px 0;
+}
+.info table{ width:100%; border-collapse:collapse; font-size:12px }
+.info th{ width:110px; text-align:left; padding:5px 6px; background:#f6f6f6; border-right:1px solid var(--thin); }
+.info td{ padding:5px 6px; }
+
+/* Tabla de ítems */
+.items{ margin-top:8px }
+.items table{ width:100%; border-collapse:collapse; font-size:12px }
+.items thead th{
+  background:var(--header); border:1px solid var(--line); padding:6px 4px; text-transform:uppercase; font-weight:700;
+}
+.items tbody td{
+  border:1px solid var(--line); padding:6px 4px; vertical-align:top;
+}
+.items .desc{ white-space:pre-line; line-height:1.25 }
+.right-align{text-align:right}
+
+/* Totales y pagos */
+.letters{ font-size:10.5px; margin-top:6px; text-transform:uppercase }
+.pay{ margin-top:8px; font-size:12px; font-weight:700; text-transform:uppercase }
+.totals{
+  display:grid; grid-template-columns:1fr 240px; gap:12px; align-items:end; margin-top:8px
+}
+.totals .box{ border:1px solid var(--line); border-radius:6px; overflow:hidden }
+.totals table{ width:100%; border-collapse:collapse; font-size:12px }
+.totals td{ padding:8px; border-bottom:1px solid var(--thin) }
+.totals tr:last-child td{ border-bottom:0 }
+.totals .label{ font-weight:800; text-transform:uppercase }
+.totals .num{ text-align:right }
+
+/* Observaciones */
+.obs{
+  margin-top:8px; font-size:10.5px; text-transform:uppercase;
+  border-top:1px solid var(--line); padding-top:6px
+}
+
+/* Print */
+@media print{
+  body{background:#fff}
+  .page{box-shadow:none; margin:0; width:auto; min-height:auto; padding:10mm}
+  .stamp{opacity:.75}
+}
+</style>
+</head>
+<body>
+{% set is_pdf = is_pdf|default(False) %}
+{% set logo_data_uri = logo_data_uri|default(None) %}
+{% set whatsapp_enabled = whatsapp_enabled|default(False) %}
+
+<!-- ======== Plantilla de la factura ======== -->
+<div class="page" id="factura">
+  <div class="stamp" id="stamp">CANCELADO</div>
+
+  <header class="header">
+    <div class="logo">
+      {% set logo_src = logo_data_uri if is_pdf and logo_data_uri else url_for('send_static', path='img/ciclovariedadessisi.jpg') %}
+      <img src="{{ logo_src }}" alt="Logo Ciclo Variedades Sisi">
+    </div>
+
+    <div class="company">
+      <div class="name" id="co_name">FREDY ALEXANDER GIRALDO GIRALDO</div>
+      <div class="line">NIT: <span id="co_nit">1143933804-9</span></div>
+      <div class="line">RÉGIMEN: <span id="co_regimen">SIMPLIFICADO</span></div>
+      <div class="line" id="co_addr">CAR. 46 # 49 - 26</div>
+      <div class="line" id="co_city">CALI - COLOMBIA</div>
+      <div class="small" id="co_tel">📞 3152441736</div>
+    </div>
+
+    <div class="right">
+      <div class="social">
+        Instagram: @ciclovariedades_sisi<br/>
+        Facebook: ciclo variedades sisi
+      </div>
+      <div class="bill-meta">
+        <div class="row"><span>Factura No.</span> <span class="no" id="numFactura">{{ invoice.number }}</span></div>
+        <div class="row"><span>Fecha factura</span> <span id="fecFactura">{{ invoice.date.strftime("%d/%b/%Y").upper() }}</span></div>
+</div>
+</div>
+  </header>
+
+  <section class="info">
+    <table>
+      <tr><th>SEÑORES:</th><td id="cl_nombre">{{ invoice.customer.name or "-" }}</td></tr>
+      <tr><th>DIRECCIÓN:</th><td id="cl_dir">{{ invoice.customer.address or "-" }}</td></tr>
+      <tr><th>CIUDAD:</th><td id="cl_ciudad">CALI-VALLE</td></tr>
+    </table>
+    <table>
+      <tr><th>NIT/CC:</th><td id="cl_nit">{{ invoice.customer.document_number or "-" }}</td></tr>
+      <tr><th>TELÉFONO:</th><td id="cl_tel">{{ invoice.customer.phone or "-" }}</td></tr>
+      <tr><th>EMAIL:</th><td id="cl_email">{{ invoice.customer.email or "-" }}</td></tr>
+      <tr><th>VENDEDOR:</th><td id="cl_vendedor">ALEXANDER GIRALDO</td></tr>
+    </table>
+  </section>
+
+  <section class="items">
+    <table id="tablaItems">
+      <thead>
+        <tr>
+          <th style="width:44px">ITEM</th>
+          <th style="width:90px">CÓDIGO</th>
+          <th>DESCRIPCIÓN</th>
+          <th style="width:72px">CANTIDAD</th>
+          <th style="width:110px">VALOR UNI.</th>
+          <th style="width:120px">VALOR TOTAL</th>
+        </tr>
+      </thead>
+    <tbody>
+        {% for row in invoice_items_display %}
+        <tr>
+          <td class="right-align">{{ row.index }}</td>
+          <td>{{ row.product.sku }}</td>
+          <td class="desc">{{ row.product.name }}</td>
+          <td class="right-align">{{ row.quantity }}</td>
+          <td class="right-align">${{ "%.0f"|format(row.unit_price) }}</td>
+          <td class="right-align">${{ "%.0f"|format(row.total) }}</td>
+        </tr>
+        {% endfor %}
+        {% for i in range(items_fillers) %}
+        <tr>
+          <td>&nbsp;</td><td></td><td></td><td></td><td></td><td></td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  </section>
+
+  <div class="letters" id="totalLetras">TOTAL EN LETRAS: {{ total_en_letras }}</div>
+  <div class="pay" id="medioPago">MEDIO DE PAGO: {{ invoice.payment_method or "EFECTIVO" }}</div>
+
+  <section class="totals">
+    <div></div>
+    <div class="box">
+      <table>
+        <tr><td class="label">TOTAL A PAGAR</td><td class="num" id="totalPagar">${{ "%.0f"|format(total_to_pay) }}</td></tr>
+      </table>
+    </div>
+  </section>
+
+  <div class="obs" id="observaciones">
+    OBSERVACIONES: ESTA FACTURA DE VENTA SE ASIMILA EN TODOS SUS EFECTOS LEGALES A UNA LETRA DE CAMBIO SEGÚN ART. 774 DEL CÓDIGO DE COMERCIO.
+  </div>
+
+  {% if not is_pdf %}
+  <!-- Enlaces de compartir -->
+  <div class="share-links" style="margin-top: 20px; text-align: center; padding: 15px; background: #f8f9fa; border-radius: 8px;">
+    <h6 style="margin-bottom: 15px; color: #333;">Compartir Factura</h6>
+    <div style="display: flex; gap: 10px; justify-content: center; flex-wrap: wrap;">
+      <a href="#" id="emailShare" class="btn btn-outline-primary btn-sm" style="text-decoration: none;">
+        <i class="fas fa-envelope me-1"></i> Enviar por Correo
+      </a>
+      <a href="#" id="whatsappShare" class="btn btn-outline-success btn-sm" style="text-decoration: none;">
+        <i class="fab fa-whatsapp me-1"></i> Enviar por WhatsApp
+      </a>
+      <a href="/invoice/{{ invoice.id }}/pdf" class="btn btn-outline-danger btn-sm" style="text-decoration: none;" target="_blank">
+        <i class="fas fa-file-pdf me-1"></i> Descargar PDF
+      </a>
+    </div>
+  </div>
+  {% endif %}
+</div>
+
+{% if not is_pdf %}
+<script>
+// Función para convertir números a letras en español
+function numeroALetras(n){
+  n = Math.floor(n);
+  if(n === 0) return "CERO";
+  const u = ["","UNO","DOS","TRES","CUATRO","CINCO","SEIS","SIETE","OCHO","NUEVE"];
+  const d = ["","DIEZ","VEINTE","TREINTA","CUARENTA","CINCUENTA","SESENTA","SETENTA","OCHENTA","NOVENTA"];
+  const t = ["","CIENTO","DOSCIENTOS","TRESCIENTOS","CUATROCIENTOS","QUINIENTOS","SEISCIENTOS","SETECIENTOS","OCHOCIENTOS","NOVECIENTOS"];
+  
+  function decenas(n){
+    if(n<10) return u[n];
+    if(n>=10 && n<16){ return ["DIEZ","ONCE","DOCE","TRECE","CATORCE","QUINCE"][n-10]; }
+    if(n<20) return "DIECI" + u[n-10].toLowerCase().toUpperCase();
+    if(n===20) return "VEINTE";
+    if(n<30) return "VEINTI" + u[n-20].toLowerCase().toUpperCase();
+    const ten = Math.floor(n/10), rest = n%10;
+    return rest? `${d[ten]} Y ${u[rest]}` : d[ten];
+  }
+  
+  function centenas(n){
+    if(n===0) return "";
+    if(n===100) return "CIEN";
+    const cen = Math.floor(n/100), rest = n%100;
+    return [t[cen], decenas(rest)].filter(Boolean).join(" ");
+  }
+  
+  function miles(n){
+    if(n<1000) return centenas(n);
+    const m = Math.floor(n/1000), rest = n%1000;
+    const mtxt = (m===1)? "MIL" : `${centenas(m)} MIL`;
+    return [mtxt, centenas(rest)].filter(Boolean).join(" ");
+  }
+  
+  function millones(n){
+    if(n<1000000) return miles(n);
+    const mill = Math.floor(n/1000000), rest = n%1000000;
+    const mtxt = (mill===1)? "UN MILLÓN" : `${miles(mill)} MILLONES`;
+    return [mtxt, miles(rest)].filter(Boolean).join(" ");
+  }
+  
+  return millones(n);
+}
+
+// Actualizar el total en letras
+document.addEventListener('DOMContentLoaded', function() {
+  const totalValue = parseFloat('{{ "%.2f"|format(total_to_pay) }}');
+  const totalLetras = numeroALetras(totalValue);
+  document.getElementById('totalLetras').textContent = `TOTAL EN LETRAS: ${totalLetras} PESOS M/L`;
+  
+  // Configurar enlaces de compartir
+  setupShareLinks();
+});
+
+function setupShareLinks() {
+  // Datos de la factura
+  const invoiceData = {
+    id: '{{ invoice.id }}',
+    number: '{{ invoice.number }}',
+    date: '{{ invoice.date.strftime("%d/%b/%Y") }}',
+    customer: '{{ invoice.customer.name }}',
+    phone: '{{ invoice.customer.phone or "" }}',
+    email: '{{ invoice.customer.email or "" }}',
+    total: '{{ "%.0f"|format(total_to_pay) }}',
+    paymentMethod: '{{ invoice.payment_method or "EFECTIVO" }}',
+    pdfPath: '{{ url_for("invoice_pdf", invoice_id=invoice.id) }}'
+  };
+  
+  // Enlace de correo
+  document.getElementById('emailShare').addEventListener('click', function(e) {
+    e.preventDefault();
+
+    if (!invoiceData.email || invoiceData.email.trim() === '') {
+      alert('El cliente no tiene correo electrónico registrado. Por favor, agregue un correo en los datos del cliente.');
+      return;
+    }
+
+    const btn = this;
+    const originalText = btn.innerText;
+    btn.innerText = 'Enviando...';
+    btn.setAttribute('disabled', 'disabled');
+
+    fetch(`/invoice/${invoiceData.id}/send_email`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email: invoiceData.email })
+    })
+      .then(response => response.json().then(data => ({ ok: response.ok, data })))
+      .then(({ ok, data }) => {
+        if (!ok || !data.success) {
+          throw new Error(data && data.error ? data.error : 'Ocurrió un error enviando el correo.');
+        }
+        alert('Correo enviado correctamente.');
+      })
+      .catch(err => {
+        console.error(err);
+        alert(`No se pudo enviar el correo: ${err.message}`);
+      })
+      .finally(() => {
+        btn.innerText = originalText;
+        btn.removeAttribute('disabled');
+      });
+  });
+  
+  // Enlace de WhatsApp
+  const whatsappEnabled = {{ 'true' if whatsapp_enabled else 'false' }};
+  document.getElementById('whatsappShare').addEventListener('click', function(e) {
+    e.preventDefault();
+    
+    if (!invoiceData.phone || invoiceData.phone.trim() === '') {
+      alert('El cliente no tiene número de teléfono registrado. Por favor, agregue un teléfono en los datos del cliente.');
+      return;
+    }
+    
+    let cleanPhone = invoiceData.phone.replace(/[\s\-\(\)]/g, '');
+    if (!cleanPhone.startsWith('57')) {
+      cleanPhone = '57' + cleanPhone;
+    }
+    
+    const message = `Hola ${invoiceData.customer}!
+
+Te envío la factura ${invoiceData.number} por un valor de $${invoiceData.total} pesos.
+
+Detalles:
+- Fecha: ${invoiceData.date}
+- Total: $${invoiceData.total} pesos
+- Método de pago: ${invoiceData.paymentMethod}
+
+Para descargar el PDF: ${window.location.origin}${invoiceData.pdfPath}
+
+Gracias por tu compra!
+
+Ciclo Variedades Sisi`;
+
+    if (!whatsappEnabled) {
+      const whatsappLink = `https://wa.me/${cleanPhone}?text=${encodeURIComponent(message)}`;
+      window.open(whatsappLink, '_blank');
+      return;
+    }
+
+    const btn = this;
+    const originalText = btn.innerText;
+    btn.innerText = 'Enviando...';
+    btn.setAttribute('disabled', 'disabled');
+
+    fetch(`/invoice/${invoiceData.id}/send_whatsapp`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ phone: cleanPhone })
+    })
+      .then(response => response.json().then(data => ({ ok: response.ok, data })))
+      .then(({ ok, data }) => {
+        if (!ok || !data.success) {
+          throw new Error(data && data.error ? data.error : 'Ocurrió un error enviando el mensaje.');
+        }
+        alert('Mensaje enviado correctamente.');
+      })
+      .catch(err => {
+        console.error(err);
+        alert(`No se pudo enviar el mensaje: ${err.message}`);
+      })
+      .finally(() => {
+        btn.innerText = originalText;
+        btn.removeAttribute('disabled');
+      });
+  });
+}
+</script>
+{% endif %}
+
+</body>
+</html>
+
