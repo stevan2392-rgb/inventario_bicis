@@ -1,6 +1,21 @@
-body { background: #f8f9fb; color: #222; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial; }
-.table td, .table th { vertical-align: middle; }
+body {
+	background: #f8f9fb;
+	color: #222;
+	font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;
+	min-height: 100vh;
+}
+.table td,
+.table th { vertical-align: middle; }
+.table-responsive { border-radius: 0.5rem; }
 .list-group-item.low { background-color: #fff3cd; }
+
+.navbar .container-fluid {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 1rem;
+	flex-wrap: wrap;
+}
 
 /* Header y footer con degradado azul -> verde */
 .navbar.bg-gradient, header.bg-gradient {
@@ -12,6 +27,7 @@ body { background: #f8f9fb; color: #222; font-family: -apple-system, BlinkMacSys
 .navbar .navbar-brand {
 	font-weight: 600;
 	letter-spacing: 0.3px;
+	margin-right: auto;
 }
 
 /* Centrar y agrandar el título principal */
@@ -33,8 +49,46 @@ footer h5 { color: #fff; font-weight:600; }
 footer p, footer a { color: rgba(255,255,255,0.9); }
 footer a:hover { color: #fff; text-decoration: none; }
 
-/* Ajustes para móviles: compactar espacio en header/footer */
+main.container {
+	max-width: 1200px;
+}
+
+.card { border-radius: 12px; }
+
+.form-section-label {
+	font-weight: 600;
+	text-transform: uppercase;
+	font-size: 0.85rem;
+	color: #495057;
+}
+
+/* Ajustes responsivos para tablets y móviles */
+@media (max-width: 991.98px) {
+	.navbar .container-fluid {
+		justify-content: center;
+		text-align: center;
+	}
+	.navbar .navbar-brand {
+		width: auto;
+		margin-right: 0;
+		font-size: 1.2rem;
+	}
+	.navbar .container-fluid img {
+		margin-left: 0 !important;
+	}
+	.table-responsive {
+		margin-bottom: 1.5rem;
+	}
+}
+
 @media (max-width: 576px) {
-	.navbar .navbar-brand { font-size: 1.1rem; }
+	.navbar .navbar-brand { font-size: 1.05rem; }
 	footer .container { padding-left: 0.75rem; padding-right: 0.75rem; }
+	.navbar .container-fluid {
+		flex-direction: column;
+		gap: 0.5rem;
+	}
+	.navbar .container-fluid img {
+		margin-top: 0.35rem;
+	}
 }

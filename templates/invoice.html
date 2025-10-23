@@ -21,9 +21,13 @@ body{
 
 /* ======== Página de factura ======== */
 .page{
-  width:210mm; min-height:297mm; margin:16px auto; background:#fff;
+  width:min(100%,210mm);
+  min-height:297mm;
+  margin:16px auto;
+  background:#fff;
   box-shadow:0 6px 24px rgba(14,23,53,.06);
-  padding:12mm; position:relative;
+  padding:clamp(18px,3vw,12mm);
+  position:relative;
 }
 
 /* Sello CANCELADO */
@@ -99,6 +103,26 @@ body{
   body{background:#fff}
   .page{box-shadow:none; margin:0; width:auto; min-height:auto; padding:10mm}
   .stamp{opacity:.75}
+}
+
+@media (max-width:1024px){
+  .header{ grid-template-columns: 80px 1fr; }
+  .right{ grid-template-columns:1fr; }
+  .totals{ grid-template-columns:1fr 220px; }
+}
+
+@media (max-width:768px){
+  .page{ margin:12px; }
+  .header{
+    grid-template-columns:1fr;
+    text-align:center;
+  }
+  .logo img{ margin:0 auto; }
+  .company{ text-align:center; }
+  .right{ gap:12px; }
+  .info{ grid-template-columns:1fr; }
+  .totals{ grid-template-columns:1fr; gap:16px; }
+  .stamp{ font-size:32px; }
 }
 </style>
 </head>

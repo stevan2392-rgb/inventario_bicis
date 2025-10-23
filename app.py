@@ -42,8 +42,8 @@ WEASYPRINT_AVAILABLE = False
 try:
     from weasyprint import HTML  # type: ignore
     WEASYPRINT_AVAILABLE = True
-except ImportError:
-    print("WeasyPrint no está disponible. Se usará el generador básico de PDF.")
+except (ImportError, OSError):
+    print("WeasyPrint no esta disponible. Se usara el generador basico de PDF.")
 from sqlalchemy import (
     create_engine, Column, Integer, String, DateTime, Date, ForeignKey, Numeric, Text, UniqueConstraint
 )
