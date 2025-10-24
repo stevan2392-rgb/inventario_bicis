@@ -11,8 +11,10 @@
   <body>
   <nav class="navbar navbar-expand-lg navbar-dark bg-gradient" style="background: linear-gradient(90deg, #0d6efd 0%, #20c997 100%) !important;">
       <div class="container-fluid">
-        <a class="navbar-brand" href="/">Inventarios Ciclo Variedades Sisi</a>
-          <img src="{{ url_for('send_static', path='img/ciclovariedadessisi.jpg') }}" alt="Logo Ciclo Variedades Sisi" style="height:56px; width:auto; margin-left:16px; border-radius:8px;" class="d-inline-block align-middle">
+        <div class="brand-stack d-flex align-items-center justify-content-center gap-3 flex-wrap">
+          <img src="{{ url_for('send_static', path='img/ciclovariedadessisi.jpg') }}" alt="Logo Ciclo Variedades Sisi" class="brand-logo">
+          <a class="navbar-brand mb-0" href="/">Inventarios Ciclo Variedades Sisi</a>
+        </div>
       </div>
     </nav>
     <main class="container my-4">
@@ -27,6 +29,15 @@
             <p class="mb-1">Dirección: Cra 46 # 49-26 Ciudad Cordoba</p>
             <p class="mb-1">Teléfono: +57 315 244 1736</p>
             <p class="mb-0">Email: fredyalexandergiraldogiraldo@hotmail.com</p>
+            <div class="ratio ratio-4x3 map-embed mt-3">
+              <iframe
+                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3982.7917577231183!2d-76.510184!3d3.4009189999999996!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x8e30a12c44abf39b%3A0x15e2db46391506c2!2sCra.%2046%20%23%2049-26%2C%20Cali%2C%20Valle%20del%20Cauca!5e0!3m2!1ses-419!2sco!4v1761254193604!5m2!1ses-419!2sco"
+                style="border:0;"
+                allowfullscreen=""
+                loading="lazy"
+                referrerpolicy="no-referrer-when-downgrade">
+              </iframe>
+            </div>
           </div>
           <div class="col-md-4 mb-3 mb-md-0">
             <h5>Síguenos</h5>

@@ -1,30 +1,35 @@
 {% extends "base.html" %}
 {% block content %}
-<div class="row mb-4">
-  <div class="col-12">
-    <div class="alert alert-info" role="alert">
-      <strong>Panel de alertas</strong> — revisa existencias bajas y mantenimientos próximos.
-    </div>
-  </div>
-  <div class="col-lg-6 col-md-12">
-    <div class="card">
-      <div class="card-header">Existencias bajas</div>
-      <div class="card-body">
-        <ul id="lowStockList" class="list-group small"></ul>
+<div class="alert alert-info shadow-sm mb-4" role="alert">
+  <strong>Panel de alertas</strong> &mdash; revisa existencias bajas y mantenimientos pr&oacute;ximos.
+</div>
+
+<div class="row row-cols-1 row-cols-lg-2 g-4 mb-4 align-items-stretch">
+  <div class="col">
+    <div class="card section-card shadow-sm h-100">
+      <div class="card-header d-flex align-items-center gap-2">
+        <i class="fas fa-box text-primary"></i>
+        <span class="fw-semibold">Existencias bajas</span>
+      </div>
+      <div class="card-body p-3">
+        <ul id="lowStockList" class="list-group list-group-flush small"></ul>
       </div>
     </div>
   </div>
-  <div class="col-lg-6 col-md-12 mt-3 mt-lg-0">
-    <div class="card">
-      <div class="card-header">Mantenimientos próximos (14 días)</div>
-      <div class="card-body">
-        <ul id="maintenanceList" class="list-group small"></ul>
+  <div class="col">
+    <div class="card section-card shadow-sm h-100">
+      <div class="card-header d-flex align-items-center gap-2">
+        <i class="fas fa-screwdriver-wrench text-success"></i>
+        <span class="fw-semibold">Mantenimientos pr&oacute;ximos (14 d&iacute;as)</span>
+      </div>
+      <div class="card-body p-3">
+        <ul id="maintenanceList" class="list-group list-group-flush small"></ul>
       </div>
     </div>
   </div>
 </div>
 
-<ul class="nav nav-tabs" id="mainTabs" role="tablist">
+<ul class="nav nav-pills nav-tabs-responsive justify-content-center gap-2 mb-4" id="mainTabs" role="tablist">
   <li class="nav-item" role="presentation">
     <button class="nav-link active" id="inventario-tab" data-bs-toggle="tab" data-bs-target="#inventario" type="button" role="tab">Inventario</button>
   </li>
@@ -35,219 +40,286 @@
     <button class="nav-link" id="remisiones-tab" data-bs-toggle="tab" data-bs-target="#remisiones" type="button" role="tab">Remisiones</button>
   </li>
   <li class="nav-item" role="presentation">
-    <button class="nav-link" id="facturacion-tab" data-bs-toggle="tab" data-bs-target="#facturacion" type="button" role="tab">Facturación</button>
+    <button class="nav-link" id="facturacion-tab" data-bs-toggle="tab" data-bs-target="#facturacion" type="button" role="tab">Facturaci&oacute;n</button>
   </li>
 </ul>
 
-<div class="tab-content p-3 border border-top-0 rounded-bottom" id="mainTabsContent">
+<div class="tab-content" id="mainTabsContent">
 
   <!-- Inventario -->
   <div class="tab-pane fade show active" id="inventario" role="tabpanel" aria-labelledby="inventario-tab">
-    <div class="row g-3 align-items-end">
-      <div class="col-12 col-sm-6 col-lg-4">
-        <label class="form-label">Nombre del producto</label>
-        <input type="text" id="prodName" class="form-control" placeholder="Cadena, llanta, etc.">
+    <div class="card section-card shadow-sm mb-4">
+      <div class="card-header">
+        <span class="fw-semibold">Crear nuevo producto</span>
       </div>
-      <div class="col-12 col-sm-6 col-lg-3">
-        <label class="form-label">SKU</label>
-        <input type="text" id="prodSKU" class="form-control" placeholder="SKU único">
-      </div>
-      <div class="col-6 col-sm-4 col-lg-2">
-        <label class="form-label">Precio sin IVA</label>
-        <input type="number" id="prodPrice" class="form-control" step="0.01">
-      </div>
-      <div class="col-6 col-sm-4 col-lg-2">
-        <label class="form-label">Umbral bajo</label>
-        <input type="number" id="prodLow" class="form-control" value="5">
-      </div>
-      <div class="col-12 col-sm-6 col-lg-1 d-grid">
-        <button class="btn btn-primary" id="btnAddProduct">Crear</button>
-      </div>
-    </div>
-
-    <hr>
-
-    <div class="row g-3 align-items-end">
-      <div class="col-12 col-lg-4">
-        <label class="form-label">Producto</label>
-        <select id="adjustProduct" class="form-select"></select>
-      </div>
-      <div class="col-6 col-sm-6 col-lg-3">
-        <label class="form-label">Cantidad a ingresar</label>
-        <input type="number" id="adjustQty" class="form-control" value="1">
-      </div>
-      <div class="col-12 col-lg-4">
-        <label class="form-label">Motivo</label>
-        <input type="text" id="adjustReason" class="form-control" placeholder="Ingreso inicial / ajuste">
-      </div>
-      <div class="col-12 col-lg-1 d-grid">
-        <button class="btn btn-success" id="btnAdjust">Ingresar</button>
+      <div class="card-body">
+        <div class="row g-3 align-items-end">
+          <div class="col-12 col-md-6 col-xl-4">
+            <label class="form-label">Nombre del producto</label>
+            <input type="text" id="prodName" class="form-control" placeholder="Cadena, llanta, etc.">
+          </div>
+          <div class="col-12 col-md-6 col-xl-3">
+            <label class="form-label">SKU</label>
+            <input type="text" id="prodSKU" class="form-control" placeholder="SKU &uacute;nico">
+          </div>
+          <div class="col-6 col-md-4 col-xl-2">
+            <label class="form-label">Precio sin IVA</label>
+            <input type="number" id="prodPrice" class="form-control" step="0.01">
+          </div>
+          <div class="col-6 col-md-4 col-xl-2">
+            <label class="form-label">Umbral bajo</label>
+            <input type="number" id="prodLow" class="form-control" value="5">
+          </div>
+          <div class="col-12 col-md-4 col-xl-1 d-grid">
+            <button type="button" class="btn btn-primary" id="btnAddProduct">Crear</button>
+          </div>
+        </div>
       </div>
     </div>
 
-    <hr>
-    <h6>Productos</h6>
-    <div class="table-responsive">
-      <table class="table table-sm table-striped align-middle" id="productTable">
-        <thead>
-          <tr>
-            <th>SKU</th>
-            <th>Producto</th>
-            <th>Precio sin IVA</th>
-            <th>IVA (Pesos)</th>
-            <th>Precio con IVA</th>
-            <th>Proveedor</th>
-            <th>Vendidas</th>
-            <th>Stock</th>
-            <th>Umbral</th>
-          </tr>
-        </thead>
-        <tbody></tbody>
-      </table>
+    <div class="card section-card shadow-sm mb-4">
+      <div class="card-header">
+        <span class="fw-semibold">Ajustar inventario existente</span>
+      </div>
+      <div class="card-body">
+        <div class="row g-3 align-items-end">
+          <div class="col-12 col-lg-5 col-xl-4">
+            <label class="form-label">Producto</label>
+            <select id="adjustProduct" class="form-select"></select>
+          </div>
+          <div class="col-6 col-sm-4 col-lg-2 col-xl-2">
+            <label class="form-label">Cantidad</label>
+            <input type="number" id="adjustQty" class="form-control" value="1">
+          </div>
+          <div class="col-12 col-lg-4 col-xl-4">
+            <label class="form-label">Motivo</label>
+            <input type="text" id="adjustReason" class="form-control" placeholder="Ingreso inicial / ajuste">
+          </div>
+          <div class="col-12 col-sm-4 col-lg-1 col-xl-2 d-grid">
+            <button type="button" class="btn btn-success" id="btnAdjust">Ingresar</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card section-card shadow-sm">
+      <div class="card-header d-flex flex-column flex-md-row align-items-md-center justify-content-between gap-2">
+        <span class="fw-semibold">Productos registrados</span>
+        <span class="text-muted small">Actualizado en tiempo real</span>
+      </div>
+      <div class="card-body p-0">
+        <div class="table-responsive">
+          <table class="table table-striped table-hover align-middle mb-0" id="productTable">
+            <thead>
+              <tr>
+                <th>SKU</th>
+                <th>Producto</th>
+                <th>Precio sin IVA</th>
+                <th>IVA (pesos)</th>
+                <th>Precio con IVA</th>
+                <th>Proveedor</th>
+                <th>Vendidas</th>
+                <th>Stock</th>
+                <th>Umbral</th>
+                <th class="text-center">Acciones</th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+        </div>
+      </div>
     </div>
   </div>
 
   <!-- Compras -->
   <div class="tab-pane fade" id="compras" role="tabpanel" aria-labelledby="compras-tab">
-    <div class="row g-3">
-      <div class="col-12 col-md-6 col-lg-4">
-        <label class="form-label">Proveedor (nombre)</label>
-        <input type="text" id="supName" class="form-control">
+    <div class="card section-card shadow-sm mb-4">
+      <div class="card-header">
+        <span class="fw-semibold">Datos del proveedor</span>
       </div>
-      <div class="col-6 col-md-6 col-lg-3">
-        <label class="form-label">Teléfono</label>
-        <input type="text" id="supPhone" class="form-control">
-      </div>
-      <div class="col-12 col-md-6 col-lg-3">
-        <label class="form-label">Email</label>
-        <input type="email" id="supEmail" class="form-control">
-      </div>
-      <div class="col-12 col-md-6 col-lg-2">
-        <label class="form-label">Dirección</label>
-        <input type="text" id="supAddress" class="form-control">
+      <div class="card-body">
+        <div class="row g-3">
+          <div class="col-12 col-md-6 col-lg-4">
+            <label class="form-label">Proveedor (nombre)</label>
+            <input type="text" id="supName" class="form-control">
+          </div>
+          <div class="col-6 col-md-6 col-lg-3">
+            <label class="form-label">Tel&eacute;fono</label>
+            <input type="text" id="supPhone" class="form-control">
+          </div>
+          <div class="col-12 col-md-6 col-lg-3">
+            <label class="form-label">Email</label>
+            <input type="email" id="supEmail" class="form-control">
+          </div>
+          <div class="col-12 col-md-6 col-lg-2">
+            <label class="form-label">Direcci&oacute;n</label>
+            <input type="text" id="supAddress" class="form-control">
+          </div>
+        </div>
       </div>
     </div>
-    <div class="row mt-3">
-      <div class="col-12">
+
+    <div class="card section-card shadow-sm">
+      <div class="card-header d-flex flex-column flex-lg-row align-items-lg-center justify-content-between gap-3">
+        <div>
+          <span class="fw-semibold d-block">Items de la compra</span>
+          <small class="text-muted">Busca productos, ajusta cantidades y guarda la compra</small>
+        </div>
+        <button type="button" class="btn btn-outline-secondary btn-sm ms-lg-auto" id="btnAddPurchaseItem">
+          <i class="fas fa-plus me-1"></i>Agregar &iacute;tem
+        </button>
+      </div>
+      <div class="card-body p-0">
         <div class="table-responsive">
-          <table class="table table-sm" id="purchaseItems">
+          <table class="table table-sm table-striped align-middle mb-0" id="purchaseItems">
             <thead>
               <tr><th>Producto</th><th>Cantidad</th><th>Costo unitario (sin IVA)</th><th>IVA</th><th></th></tr>
             </thead>
             <tbody></tbody>
           </table>
         </div>
-        <button class="btn btn-outline-secondary btn-sm" id="btnAddPurchaseItem">+ Agregar ítem</button>
       </div>
-    </div>
-    <div class="row mt-3">
-      <div class="col-12 col-lg-8">
-        <input type="text" id="purchaseNotes" class="form-control" placeholder="Notas de la compra (opcional)">
-      </div>
-      <div class="col-12 col-lg-4 d-grid mt-3 mt-lg-0">
-        <button class="btn btn-primary" id="btnSavePurchase">Guardar compra e ingresar</button>
+      <div class="card-footer d-grid gap-3 d-lg-flex align-items-center">
+        <input type="text" id="purchaseNotes" class="form-control flex-grow-1" placeholder="Notas de la compra (opcional)">
+        <button type="button" class="btn btn-primary flex-shrink-0" id="btnSavePurchase">Guardar compra e ingresar</button>
       </div>
     </div>
     <div class="mt-3" id="purchaseResult"></div>
     <div class="mt-3">
       <a href="/history/purchases" class="btn btn-outline-info">
-        <i class="fas fa-history me-1"></i>Ver Historial de Compras
+        <i class="fas fa-history me-1"></i>Ver historial de compras
       </a>
     </div>
   </div>
 
   <!-- Remisiones -->
   <div class="tab-pane fade" id="remisiones" role="tabpanel" aria-labelledby="remisiones-tab">
-    <div class="row g-3">
-      <div class="col-12 col-sm-6 col-lg-3"><input class="form-control" id="remName" placeholder="Nombre del cliente"></div>
-      <div class="col-6 col-sm-6 col-lg-2"><input class="form-control" id="remDoc" placeholder="Documento"></div>
-      <div class="col-6 col-sm-6 col-lg-2"><input class="form-control" id="remPhone" placeholder="Celular"></div>
-      <div class="col-12 col-sm-6 col-lg-3"><input class="form-control" id="remEmail" placeholder="Correo electrónico"></div>
-      <div class="col-12 col-sm-6 col-lg-2"><input class="form-control" id="remAddr" placeholder="Dirección"></div>
+    <div class="card section-card shadow-sm mb-4">
+      <div class="card-header">
+        <span class="fw-semibold">Datos del cliente</span>
+      </div>
+      <div class="card-body">
+        <div class="row g-3">
+          <div class="col-12 col-sm-6 col-lg-3"><input class="form-control" id="remName" placeholder="Nombre del cliente"></div>
+          <div class="col-6 col-sm-6 col-lg-2"><input class="form-control" id="remDoc" placeholder="Documento"></div>
+          <div class="col-6 col-sm-6 col-lg-2"><input class="form-control" id="remPhone" placeholder="Celular"></div>
+          <div class="col-12 col-sm-6 col-lg-3"><input class="form-control" id="remEmail" placeholder="Correo electr&oacute;nico"></div>
+          <div class="col-12 col-sm-6 col-lg-2"><input class="form-control" id="remAddr" placeholder="Direcci&oacute;n"></div>
+        </div>
+      </div>
     </div>
-    <div class="row mt-3">
-      <div class="col-12">
+
+    <div class="card section-card shadow-sm">
+      <div class="card-header d-flex flex-column flex-lg-row align-items-lg-center justify-content-between gap-3">
+        <div>
+          <span class="fw-semibold d-block">Items de la remisi&oacute;n</span>
+          <small class="text-muted">Selecciona productos y genera la remisi&oacute;n</small>
+        </div>
+        <button type="button" class="btn btn-outline-secondary btn-sm ms-lg-auto" id="btnAddRemissionItem">
+          <i class="fas fa-plus me-1"></i>Agregar &iacute;tem
+        </button>
+      </div>
+      <div class="card-body p-0">
         <div class="table-responsive">
-          <table class="table table-sm" id="remissionItems">
+          <table class="table table-sm align-middle mb-0" id="remissionItems">
             <thead>
               <tr><th>Producto</th><th>Cantidad</th><th>Precio unitario (sin IVA)</th><th>IVA</th><th></th></tr>
             </thead>
             <tbody></tbody>
           </table>
         </div>
-        <button class="btn btn-outline-secondary btn-sm" id="btnAddRemissionItem">+ Agregar ítem</button>
       </div>
-    </div>
-    <div class="row mt-3 align-items-end">
-      <div class="col-12 col-lg-4">
-        <label class="form-label">Método de pago</label>
-        <select id="remPaymentMethod" class="form-select">
-          <option value="EFECTIVO">Efectivo</option>
-          <option value="TARJETA DE CRÉDITO">Tarjeta de Crédito</option>
-          <option value="TARJETA DE DÉBITO">Tarjeta de Débito</option>
-          <option value="TRANSFERENCIA">Transferencia</option>
-        </select>
-      </div>
-      <div class="col-12 col-lg-4">
-        <label class="form-label">Días para mantenimiento</label>
-        <input type="number" id="remMaintenanceDays" class="form-control" placeholder="Días para mantenimiento (opcional, ej. 180)">
-      </div>
-      <div class="col-12 col-lg-4 d-grid mt-3 mt-lg-0">
-        <button class="btn btn-primary" id="btnSaveRemission">Generar remisión</button>
+      <div class="card-footer">
+        <div class="row g-3 align-items-end">
+          <div class="col-12 col-lg-4">
+            <label class="form-label">M&eacute;todo de pago</label>
+            <select id="remPaymentMethod" class="form-select">
+              <option value="EFECTIVO">Efectivo</option>
+              <option value="TARJETA DE CREDITO">Tarjeta de cr&eacute;dito</option>
+              <option value="TARJETA DE DEBITO">Tarjeta de d&eacute;bito</option>
+              <option value="TRANSFERENCIA">Transferencia</option>
+            </select>
+          </div>
+          <div class="col-12 col-lg-4">
+            <label class="form-label">D&iacute;as para mantenimiento</label>
+            <input type="number" id="remMaintenanceDays" class="form-control" placeholder="Opcional, ej. 180">
+          </div>
+          <div class="col-12 col-lg-4 d-grid">
+            <button type="button" class="btn btn-primary" id="btnSaveRemission">Generar remisi&oacute;n</button>
+          </div>
+        </div>
       </div>
     </div>
     <div class="mt-3" id="remissionResult"></div>
     <div class="mt-3">
       <a href="/history/remissions" class="btn btn-outline-info">
-        <i class="fas fa-history me-1"></i>Ver Historial de Remisiones
+        <i class="fas fa-history me-1"></i>Ver historial de remisiones
       </a>
     </div>
   </div>
 
-  <!-- Facturación -->
+  <!-- Facturaci&oacute;n -->
   <div class="tab-pane fade" id="facturacion" role="tabpanel" aria-labelledby="facturacion-tab">
-    <div class="row g-3">
-      <div class="col-12 col-sm-6 col-lg-3"><input class="form-control" id="invName" placeholder="Nombre del cliente"></div>
-      <div class="col-6 col-sm-6 col-lg-2"><input class="form-control" id="invDoc" placeholder="Documento"></div>
-      <div class="col-6 col-sm-6 col-lg-2"><input class="form-control" id="invPhone" placeholder="Celular"></div>
-      <div class="col-12 col-sm-6 col-lg-3"><input class="form-control" id="invEmail" placeholder="Correo electrónico"></div>
-      <div class="col-12 col-sm-6 col-lg-2"><input class="form-control" id="invAddr" placeholder="Dirección"></div>
+    <div class="card section-card shadow-sm mb-4">
+      <div class="card-header">
+        <span class="fw-semibold">Datos del cliente</span>
+      </div>
+      <div class="card-body">
+        <div class="row g-3">
+          <div class="col-12 col-sm-6 col-lg-3"><input class="form-control" id="invName" placeholder="Nombre del cliente"></div>
+          <div class="col-6 col-sm-6 col-lg-2"><input class="form-control" id="invDoc" placeholder="Documento"></div>
+          <div class="col-6 col-sm-6 col-lg-2"><input class="form-control" id="invPhone" placeholder="Celular"></div>
+          <div class="col-12 col-sm-6 col-lg-3"><input class="form-control" id="invEmail" placeholder="Correo electr&oacute;nico"></div>
+          <div class="col-12 col-sm-6 col-lg-2"><input class="form-control" id="invAddr" placeholder="Direcci&oacute;n"></div>
+        </div>
+      </div>
     </div>
-    <div class="row mt-3">
-      <div class="col-12">
+
+    <div class="card section-card shadow-sm">
+      <div class="card-header d-flex flex-column flex-lg-row align-items-lg-center justify-content-between gap-3">
+        <div>
+          <span class="fw-semibold d-block">Items de la factura</span>
+          <small class="text-muted">Define los productos a facturar</small>
+        </div>
+        <button type="button" class="btn btn-outline-secondary btn-sm ms-lg-auto" id="btnAddInvoiceItem">
+          <i class="fas fa-plus me-1"></i>Agregar &iacute;tem
+        </button>
+      </div>
+      <div class="card-body p-0">
         <div class="table-responsive">
-          <table class="table table-sm" id="invoiceItems">
+          <table class="table table-sm align-middle mb-0" id="invoiceItems">
             <thead>
               <tr><th>Producto</th><th>Cantidad</th><th>Precio unitario (sin IVA)</th><th>IVA</th><th></th></tr>
             </thead>
             <tbody></tbody>
           </table>
         </div>
-        <button class="btn btn-outline-secondary btn-sm" id="btnAddInvoiceItem">+ Agregar ítem</button>
       </div>
-    </div>
-    <div class="row mt-3 align-items-end">
-      <div class="col-12 col-lg-4">
-        <label class="form-label">Método de pago</label>
-        <select id="invPaymentMethod" class="form-select">
-          <option value="EFECTIVO">Efectivo</option>
-          <option value="TARJETA DE CRÉDITO">Tarjeta de Crédito</option>
-          <option value="TARJETA DE DÉBITO">Tarjeta de Débito</option>
-          <option value="TRANSFERENCIA">Transferencia</option>
-        </select>
-      </div>
-      <div class="col-12 col-lg-4">
-        <label class="form-label">Días para mantenimiento</label>
-        <input type="number" id="invMaintenanceDays" class="form-control" placeholder="Días para mantenimiento (opcional, ej. 180)">
-      </div>
-      <div class="col-12 col-lg-4 d-grid mt-3 mt-lg-0">
-        <button class="btn btn-success" id="btnSaveInvoice">Generar factura</button>
+      <div class="card-footer">
+        <div class="row g-3 align-items-end">
+          <div class="col-12 col-lg-4">
+            <label class="form-label">M&eacute;todo de pago</label>
+            <select id="invPaymentMethod" class="form-select">
+              <option value="EFECTIVO">Efectivo</option>
+              <option value="TARJETA DE CREDITO">Tarjeta de cr&eacute;dito</option>
+              <option value="TARJETA DE DEBITO">Tarjeta de d&eacute;bito</option>
+              <option value="TRANSFERENCIA">Transferencia</option>
+            </select>
+          </div>
+          <div class="col-12 col-lg-4">
+            <label class="form-label">D&iacute;as para mantenimiento</label>
+            <input type="number" id="invMaintenanceDays" class="form-control" placeholder="Opcional, ej. 180">
+          </div>
+          <div class="col-12 col-lg-4 d-grid">
+            <button type="button" class="btn btn-success" id="btnSaveInvoice">Generar factura</button>
+          </div>
+        </div>
       </div>
     </div>
     <div class="mt-3" id="invoiceResult"></div>
     <div class="mt-3">
       <a href="/history/invoices" class="btn btn-outline-info">
-        <i class="fas fa-history me-1"></i>Ver Historial de Facturas
+        <i class="fas fa-history me-1"></i>Ver historial de facturas
       </a>
     </div>
   </div>

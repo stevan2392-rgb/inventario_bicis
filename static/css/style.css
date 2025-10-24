@@ -1,42 +1,63 @@
 body {
-	background: #f8f9fb;
+	background: #f5f6fb;
 	color: #222;
 	font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;
 	min-height: 100vh;
 }
 .table td,
 .table th { vertical-align: middle; }
-.table-responsive { border-radius: 0.5rem; }
+.table-responsive { border-radius: 0.75rem; }
+.table thead th {
+	background: #f0f3f9;
+	border-bottom: 1px solid rgba(13, 110, 253, 0.08);
+	font-size: 0.875rem;
+	text-transform: uppercase;
+}
 .list-group-item.low { background-color: #fff3cd; }
+.list-group-flush .list-group-item {
+	padding: 0.65rem 0.75rem;
+	border-color: rgba(15, 40, 85, 0.08);
+}
 
 .navbar .container-fluid {
 	display: flex;
 	align-items: center;
-	justify-content: space-between;
+	justify-content: center;
+	gap: 1rem;
+	flex-wrap: wrap;
+	padding: 0.75rem 1.5rem;
+}
+
+.brand-stack {
+	display: flex;
+	align-items: center;
+	justify-content: center;
 	gap: 1rem;
 	flex-wrap: wrap;
 }
 
 /* Header y footer con degradado azul -> verde */
 .navbar.bg-gradient, header.bg-gradient {
-	background: linear-gradient(90deg, #0d6efd 0%, #20c997 100%) !important; /* azul a verde */
+	background: linear-gradient(90deg, #0d6efd 0%, #20c997 100%) !important;
 	background-color: transparent !important;
 	color: #fff !important;
 }
 
-.navbar .navbar-brand {
+.brand-stack .navbar-brand {
 	font-weight: 600;
 	letter-spacing: 0.3px;
-	margin-right: auto;
+	margin: 0;
+	width: auto;
+	text-align: center;
+	font-size: 1.35rem;
+	color: #fff !important;
 }
 
-/* Centrar y agrandar el título principal */
-.navbar .navbar-brand {
-	display: block;
-	text-align: center;
-	width: 100%;
-	font-size: 1.4rem; /* un poco más grande */
-	color: #fff !important;
+.brand-logo {
+	height: 60px;
+	width: auto;
+	border-radius: 10px;
+	box-shadow: 0 0.55rem 1.5rem rgba(13, 110, 253, 0.28);
 }
 
 footer.bg-dark.bg-gradient {
@@ -50,10 +71,50 @@ footer p, footer a { color: rgba(255,255,255,0.9); }
 footer a:hover { color: #fff; text-decoration: none; }
 
 main.container {
-	max-width: 1200px;
+	max-width: 1280px;
 }
 
-.card { border-radius: 12px; }
+.card { border-radius: 16px; border: none; }
+
+.section-card {
+	background: #fff;
+	border-radius: 16px;
+	box-shadow: 0 10px 35px rgba(15, 40, 85, 0.08);
+	overflow: hidden;
+}
+.section-card .card-header {
+	padding: 1rem 1.5rem;
+	background: linear-gradient(90deg, rgba(13,110,253,0.12) 0%, rgba(32,201,151,0.12) 100%);
+	border-bottom: 1px solid rgba(13, 110, 253, 0.12);
+}
+.section-card .card-body {
+	padding: 1.5rem;
+}
+.section-card .card-body.p-0 { padding: 0; }
+.section-card .card-footer {
+	background: #f7f9ff;
+	border-top: 1px solid rgba(13, 110, 253, 0.08);
+	padding: 1.25rem 1.5rem;
+}
+
+.nav-tabs-responsive .nav-link {
+	border-radius: 999px;
+	padding: 0.75rem 1.65rem;
+	border: none;
+	font-weight: 600;
+	background: rgba(13, 110, 253, 0.08);
+	color: #1c2c4c;
+	transition: all 0.2s ease;
+}
+.nav-tabs-responsive .nav-link:hover {
+	background: rgba(13, 110, 253, 0.16);
+	color: #0a3d91;
+}
+.nav-tabs-responsive .nav-link.active {
+	background: linear-gradient(90deg, #0d6efd 0%, #20c997 100%);
+	color: #fff;
+	box-shadow: 0 0.75rem 2rem rgba(13, 110, 253, 0.25);
+}
 
 .form-section-label {
 	font-weight: 600;
@@ -62,33 +123,50 @@ main.container {
 	color: #495057;
 }
 
-/* Ajustes responsivos para tablets y móviles */
+/* Ajustes responsivos para tablets y m&oacute;viles */
 @media (max-width: 991.98px) {
 	.navbar .container-fluid {
 		justify-content: center;
 		text-align: center;
 	}
-	.navbar .navbar-brand {
-		width: auto;
-		margin-right: 0;
+	.brand-stack .navbar-brand {
 		font-size: 1.2rem;
 	}
-	.navbar .container-fluid img {
-		margin-left: 0 !important;
+	.brand-logo {
+		height: 54px;
 	}
 	.table-responsive {
 		margin-bottom: 1.5rem;
 	}
+	.section-card .card-header {
+		text-align: center;
+	}
+.section-card .card-footer {
+	display: grid;
+	gap: 1rem;
+}
 }
 
 @media (max-width: 576px) {
-	.navbar .navbar-brand { font-size: 1.05rem; }
+	.brand-stack {
+		flex-direction: column;
+	}
+	.brand-stack .navbar-brand { font-size: 1.05rem; }
+	.brand-logo {
+		height: 52px;
+	}
 	footer .container { padding-left: 0.75rem; padding-right: 0.75rem; }
 	.navbar .container-fluid {
 		flex-direction: column;
-		gap: 0.5rem;
+		gap: 0.75rem;
 	}
-	.navbar .container-fluid img {
-		margin-top: 0.35rem;
+	.nav-tabs-responsive .nav-link {
+		width: 100%;
+		text-align: center;
 	}
+}
+
+.map-embed iframe {
+	border: 0;
+	border-radius: 12px;
 }
