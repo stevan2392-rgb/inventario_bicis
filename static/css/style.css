@@ -18,6 +18,21 @@ body {
 	padding: 0.65rem 0.75rem;
 	border-color: rgba(15, 40, 85, 0.08);
 }
+.maintenance-alert-info small {
+	display: block;
+}
+.maintenance-check-btn {
+	width: 36px;
+	height: 36px;
+	border-radius: 999px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	box-shadow: 0 0.45rem 1.2rem rgba(25, 135, 84, 0.25);
+}
+.maintenance-check-btn i {
+	font-size: 0.95rem;
+}
 
 .navbar .container-fluid {
 	display: flex;

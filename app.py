@@ -1740,7 +1740,8 @@ def api_remissions_create():
         db.refresh(customer)
         customer_data = customer_to_dict(customer)  # Serializar inmediatamente
 
-        number = f"REM-{datetime.utcnow().strftime('%Y%m%d')}-{next_sequence('remission', start_at=1001)}"
+        remission_seq = next_sequence("remission", start_at=1)
+        number = f"REM-{datetime.utcnow().strftime('%Y%m%d')}-{remission_seq:03d}"
         payment_method = (payload.get("payment_method") or "EFECTIVO").strip()
         remission = Remission(number=number, customer_id=customer_id, payment_method=payment_method)
         db.add(remission)
@@ -1833,7 +1834,8 @@ def api_invoices_create():
         db.refresh(customer)
         customer_data = customer_to_dict(customer)  # Serializar inmediatamente
 
-        number = f"FAC-{next_sequence('invoice', start_at=10001)}"
+        invoice_seq = next_sequence("invoice", start_at=1)
+        number = f"FAC-{invoice_seq:03d}"
         payment_method = (payload.get("payment_method") or "EFECTIVO").strip()
         invoice = Invoice(number=number, customer_id=customer_id, payment_method=payment_method)
         db.add(invoice)
@@ -1934,6 +1936,23 @@ def api_alerts_maintenance():
                 "notes": m.notes
             })
         return jsonify(out)
+    finally:
+        db.close()
+
+@app.delete("/api/alerts/maintenance/<int:reminder_id>")
+def api_alerts_maintenance_complete(reminder_id: int):
+    """Marca un recordatorio de mantenimiento como atendido (elimínalo de la lista de alertas)."""
+    db = SessionLocal()
+    try:
+        reminder = db.get(MaintenanceReminder, reminder_id)
+        if not reminder:
+            return jsonify({"error": "Recordatorio no encontrado"}), 404
+        db.delete(reminder)
+        db.commit()
+        return jsonify({"status": "ok"})
+    except Exception as exc:
+        db.rollback()
+        return jsonify({"error": str(exc)}), 400
     finally:
         db.close()
 

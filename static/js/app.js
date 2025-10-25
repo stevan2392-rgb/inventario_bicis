@@ -48,15 +48,50 @@ async function refreshAlerts(){
   let ml = document.getElementById('maintenanceList');
   ml.innerHTML = '';
   if (maint.length === 0){
-    ml.innerHTML = '<li class="list-group-item">Nada pendiente en las próximas 2 semanas.</li>';
+    ml.innerHTML = '<li class="list-group-item">Nada pendiente en las pr&oacute;ximas 2 semanas.</li>';
   } else {
     maint.forEach(m => {
       let li = document.createElement('li');
-      const d = new Date(m.due_date + "T00:00:00");
-      li.className = 'list-group-item d-flex justify-content-between align-items-center';
-      li.innerHTML = `<span><strong>${m.customer.name}</strong> — ${m.customer.phone} — ${m.customer.address || ''}</span><span>Vence: ${d.toLocaleDateString()}</span>`;
+      const dueDate = m.due_date ? new Date(m.due_date + "T00:00:00") : null;
+      const dueLabel = dueDate ? dueDate.toLocaleDateString() : 'Sin fecha';
+      li.className = 'list-group-item d-flex justify-content-between align-items-center gap-3';
+      const customer = m.customer || {};
+      const contactParts = [customer.phone, customer.address].filter(Boolean).join(' · ');
+      li.innerHTML = `
+        <div class="maintenance-alert-info">
+          <span class="fw-semibold">${customer.name || 'Cliente sin nombre'}</span>
+          ${contactParts ? `<small class="text-muted">${contactParts}</small>` : ''}
+          ${m.notes ? `<small class="text-muted">${m.notes}</small>` : ''}
+        </div>
+        <div class="d-flex align-items-center gap-2 flex-shrink-0">
+          <span class="badge bg-light text-dark border border-primary-subtle">Vence: ${dueLabel}</span>
+          <button type="button" class="btn btn-sm btn-success maintenance-check-btn" title="Marcar mantenimiento realizado" onclick="completeMaintenance(${m.id}, this)">
+            <i class="fas fa-check"></i>
+          </button>
+        </div>`;
       ml.appendChild(li);
     });
+  }
+}
+
+async function completeMaintenance(reminderId, btn){
+  if (!confirm('Confirma que este cliente ya realizo el mantenimiento?')) {
+    return;
+  }
+  const originalHTML = btn.innerHTML;
+  btn.disabled = true;
+  btn.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>';
+  try {
+    const res = await fetch(`/api/alerts/maintenance/${reminderId}`, { method: 'DELETE' });
+    if (!res.ok) {
+      const text = await res.text();
+      throw new Error(text || res.statusText);
+    }
+    await refreshAlerts();
+  } catch (error) {
+    btn.disabled = false;
+    btn.innerHTML = originalHTML;
+    alert('No se pudo marcar el mantenimiento como realizado: ' + error.message);
   }
 }
 
