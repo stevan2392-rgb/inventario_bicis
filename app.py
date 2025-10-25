@@ -1945,6 +1945,7 @@ def _complete_maintenance(reminder_id: int):
         reminder = db.get(MaintenanceReminder, reminder_id)
         if not reminder:
             return jsonify({"error": "Recordatorio no encontrado"}), 404
+        app.logger.info("Marcando mantenimiento completado: %s", reminder_id)
         db.delete(reminder)
         db.commit()
         return jsonify({"status": "ok"})
@@ -1957,6 +1958,22 @@ def _complete_maintenance(reminder_id: int):
 @app.delete("/api/alerts/maintenance/<int:reminder_id>")
 def api_alerts_maintenance_complete(reminder_id: int):
     """Marca un recordatorio de mantenimiento como atendido (elimínalo de la lista de alertas)."""
+    return _complete_maintenance(reminder_id)
+
+@app.route("/api/alerts/maintenance/complete", methods=["POST", "GET"])
+def api_alerts_maintenance_complete_json():
+    """Permite completar un mantenimiento usando JSON o querystring."""
+    if request.method == "GET":
+        reminder_id = request.args.get("id")
+    else:
+        payload = request.get_json(silent=True) or {}
+        reminder_id = payload.get("id")
+    if reminder_id is None:
+        return jsonify({"error": "Falta el identificador del recordatorio"}), 400
+    try:
+        reminder_id = int(reminder_id)
+    except (TypeError, ValueError):
+        return jsonify({"error": "Identificador inválido"}), 400
     return _complete_maintenance(reminder_id)
 
 @app.post("/api/alerts/maintenance/<int:reminder_id>/complete")

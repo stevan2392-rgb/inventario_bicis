@@ -82,19 +82,33 @@ async function completeMaintenance(reminderId, btn){
   btn.disabled = true;
   btn.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>';
   try {
-    let res = await fetch(`/api/alerts/maintenance/${reminderId}`, { method: 'DELETE' });
+    let res = await fetch(`/api/alerts/maintenance/complete?id=${reminderId}`);
+
+    if (!res.ok) {
+      res = await fetch('/api/alerts/maintenance/complete', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id: reminderId })
+      });
+    }
+
     if (!res.ok && (res.status === 404 || res.status === 405)) {
-      // Fallback para entornos que no soportan DELETE
+      res = await fetch(`/api/alerts/maintenance/${reminderId}`, { method: 'DELETE' });
+    }
+
+    if (!res.ok && (res.status === 404 || res.status === 405)) {
       res = await fetch(`/api/alerts/maintenance/${reminderId}/complete`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({})
       });
     }
+
     if (!res.ok) {
       const text = await res.text();
       throw new Error(text || res.statusText);
     }
+
     await refreshAlerts();
   } catch (error) {
     btn.disabled = false;
