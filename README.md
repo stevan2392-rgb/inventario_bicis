@@ -1,52 +1,31 @@
-# Inventario de Bicis
+# inventario_bicis - Deploy to Netlify
 
-Pequeña aplicación Flask con SQLite para gestionar inventario, compras, facturas y remisiones.
+Este repo contiene un sitio estático en la carpeta `docs/`.
 
-Requisitos
+Pasos rápidos para desplegar en Netlify:
 
-- Python 3.11+ recomendado
+1. Crear una cuenta en Netlify (https://app.netlify.com) y conectar con GitHub.
+2. Sites → New site → Import from Git → seleccionar el repo `stevan2392-rgb/inventario_bicis`.
+3. Configuración de build:
+   - Branch to deploy: `main`
+   - Base directory: (dejar vacío)
+   - Build command: (dejar vacío si es un sitio estático)
+   - Publish directory: `docs`
+   - Functions directory: `netlify/functions` (si usas funciones)
+4. Antes de deploy: en el campo "Site name" escribe `drjeasmanager` (si está disponible). Si no está disponible, Netlify pedirá otro nombre.
+5. Haz click en Deploy site. La URL será `https://drjeasmanager.netlify.app` si el nombre está libre.
 
-Instalación (PowerShell)
+Netlify CLI (opcional):
 
-```powershell
-python -m venv .venv; .\.venv\Scripts\Activate.ps1
-python -m pip install --upgrade pip
-python -m pip install -r requirements.txt
-```
+- Instalar y loguear:
+  npm i -g netlify-cli
+  netlify login
 
-Configura las variables copiando el ejemplo:
+- Crear sitio y hacer deploy desde la terminal:
+  netlify sites:create --name drjeasmanager --dir=docs
+  # o si el sitio ya fue creado:
+  netlify deploy --dir=docs --prod
 
-```powershell
-Copy-Item .env.example .env
-# Edita .env con tus credenciales SMTP/Twilio
-```
-
-Ejecutar la app (desarrollo)
-
-```powershell
-$env:FLASK_APP = 'app.py'
-$env:FLASK_ENV = 'development'
-python app.py
-```
-
-El servidor se ejecutará en http://127.0.0.1:5000 por defecto.
-
-Notas
-
-- La base de datos SQLite se crea automáticamente en el mismo directorio como `inventario.db`.
-- Si faltan paquetes, instalarlos con `pip install <package>`.
-- Para habilitar el envío automático de facturas y remisiones por correo configura las variables de entorno SMTP:
-  - `SMTP_HOST`, `SMTP_PORT` (opcional, 587 por defecto), `SMTP_USERNAME`, `SMTP_PASSWORD`
-  - `SMTP_FROM_EMAIL` (si se omite se usa `SMTP_USERNAME`) y `SMTP_FROM_NAME` (opcional)
-  - `SMTP_USE_TLS` (`true` por defecto) o establece `false` para usar SSL directo.
-
-- Para habilitar el envío automático por WhatsApp usa Twilio y define:
-  - `TWILIO_ACCOUNT_SID`, `TWILIO_AUTH_TOKEN`, `TWILIO_WHATSAPP_FROM` (solo el número con prefijo internacional, sin `whatsapp:`)
-  - Opcional: `TWILIO_SEND_MEDIA=true` para intentar adjuntar el PDF como media (la URL debe ser pública) y `DEFAULT_COUNTRY_CODE` (por defecto 57).
-Despliegue (producción)
-
-1. Copia `.env.example` a `.env` y rellena las variables (usa `FLASK_DEBUG=false` en producción).
-2. Instala dependencias: `python -m pip install -r requirements.txt`.
-3. Expone la app con un servidor WSGI. En Linux usa `gunicorn app:app --bind 0.0.0.0:${PORT:-8000}`.
-4. Configura el proxy/host para servir `static/` y define las variables SMTP/Twilio en el entorno del servidor.
-5. Verifica los logs de Twilio/SMTP tras el despliegue para asegurar que los envíos funcionan.
+Notas importantes:
+- Ya hay un archivo CNAME en la raíz del repo con `inventariobicis.tk`. Ese archivo solo afecta a GitHub Pages. No impide desplegar en Netlify. Si planeas usar el dominio en Netlify, configura el dominio en Netlify y sigue sus instrucciones DNS; puedes borrar o actualizar el CNAME según prefieras.
+- Si necesitas que yo elimine/actualice el CNAME o suba más contenido al `docs/`, dímelo y lo hago.
