@@ -1939,9 +1939,7 @@ def api_alerts_maintenance():
     finally:
         db.close()
 
-@app.delete("/api/alerts/maintenance/<int:reminder_id>")
-def api_alerts_maintenance_complete(reminder_id: int):
-    """Marca un recordatorio de mantenimiento como atendido (elimínalo de la lista de alertas)."""
+def _complete_maintenance(reminder_id: int):
     db = SessionLocal()
     try:
         reminder = db.get(MaintenanceReminder, reminder_id)
@@ -1955,6 +1953,16 @@ def api_alerts_maintenance_complete(reminder_id: int):
         return jsonify({"error": str(exc)}), 400
     finally:
         db.close()
+
+@app.delete("/api/alerts/maintenance/<int:reminder_id>")
+def api_alerts_maintenance_complete(reminder_id: int):
+    """Marca un recordatorio de mantenimiento como atendido (elimínalo de la lista de alertas)."""
+    return _complete_maintenance(reminder_id)
+
+@app.post("/api/alerts/maintenance/<int:reminder_id>/complete")
+def api_alerts_maintenance_complete_post(reminder_id: int):
+    """Compatibilidad para clientes que no permitan DELETE desde el frontend."""
+    return _complete_maintenance(reminder_id)
 
 @app.get("/api/invoices/history")
 def api_invoices_history():
