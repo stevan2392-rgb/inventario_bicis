@@ -1,0 +1,17 @@
+services:
+  - type: web
+    name: inventario-bicis
+    env: python
+    plan: free
+    region: oregon
+    buildCommand: pip install --upgrade pip && pip install -r requirements.txt
+    startCommand: gunicorn app:app --bind 0.0.0.0:$PORT
+    envVars:
+      - key: FLASK_ENV
+        value: production
+      - key: DATABASE_PATH
+        value: /var/data/inventario.db
+    disk:
+      name: inventario-data
+      mountPath: /var/data
+      sizeGB: 1

@@ -58,8 +58,24 @@ from sqlalchemy.exc import IntegrityError, OperationalError
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 if load_dotenv:
     load_dotenv(os.path.join(BASE_DIR, ".env"))
-DB_PATH = os.path.join(BASE_DIR, "inventario.db")
-engine = create_engine(f"sqlite:///{DB_PATH}", echo=False, future=True)
+
+DEFAULT_DB_PATH = os.path.join(BASE_DIR, "inventario.db")
+DATABASE_URL = os.getenv("DATABASE_URL", "").strip()
+DATABASE_PATH = os.getenv("DATABASE_PATH", "").strip()
+
+if DATABASE_URL:
+    DB_PATH = DATABASE_URL
+    db_connection_url = DATABASE_URL
+else:
+    DB_PATH = DATABASE_PATH or DEFAULT_DB_PATH
+    if DB_PATH.startswith("sqlite:"):
+        db_connection_url = DB_PATH
+    else:
+        db_dir = os.path.dirname(DB_PATH) or "."
+        os.makedirs(db_dir, exist_ok=True)
+        db_connection_url = f"sqlite:///{DB_PATH}"
+
+engine = create_engine(db_connection_url, echo=False, future=True)
 SessionLocal = scoped_session(sessionmaker(bind=engine, autoflush=False, autocommit=False, future=True))
 
 Base = declarative_base()
