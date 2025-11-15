@@ -1,9 +1,7 @@
 [build]
-  publish = "docs"
+  base = "docs"
+  publish = "."
   command = ""
-
-[build.environment]
-  PYTHON_VERSION = "3.10.12"
 
 [functions]
   directory = "netlify/functions"
